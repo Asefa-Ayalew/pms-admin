@@ -10,10 +10,27 @@ import {
 import { modals } from "@mantine/modals";
 import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
-import handleLogout from "../../utitlity/log-out";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import handleLogout from "@/shared/utitlity/log-out";
 
 export default function LogoutModal() {
   const [isSignout, setIsSignout] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleConfirmLogout = async () => {
+    setIsSignout(true);
+    try {
+      await handleLogout(session?.accessToken);
+      modals.closeAll();
+      router.push("/auth/signin");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setIsSignout(false);
+    }
+  };
 
   return (
     <Container>
@@ -29,12 +46,11 @@ export default function LogoutModal() {
             onClick={() => modals.closeAll()}
             ml={"auto"}
           >
-            {" "}
-            <IconX />{" "}
+            <IconX />
           </ActionIcon>
         </Flex>
         <Flex>
-          <Text> Are you sure you want to logout?</Text>
+          <Text>Are you sure you want to logout?</Text>
         </Flex>
 
         <Flex gap={5} justify="end" align={"end"} mt={30}>
@@ -43,6 +59,7 @@ export default function LogoutModal() {
             color="gray"
             className="mr-2 border border-slate-300"
             onClick={() => modals.closeAll()}
+            disabled={isSignout}
           >
             Cancel
           </Button>
@@ -50,10 +67,7 @@ export default function LogoutModal() {
             color="red"
             variant="filled"
             loading={isSignout}
-            onClick={async () => {
-              setIsSignout(true);
-              await handleLogout();
-            }}
+            onClick={handleConfirmLogout}
           >
             Logout
           </Button>

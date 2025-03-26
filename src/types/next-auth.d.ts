@@ -1,20 +1,34 @@
-import NextAuth, { DefaultSession } from "next-auth";
-import { UserProfile } from "../models/user-info.model";
-import { ActiveRole, UserRole } from "../models/user-info.model";
+import "next-auth";
+import "next-auth/jwt";
 
 declare module "next-auth" {
+  interface User {
+    id: string;
+    email: string;
+    name: string;
+    accessToken: string;
+    refreshToken: string;
+  }
+  
   interface Session {
+    user: {
+      id: string;
+      email: string;
+      name: string;
+    };
     accessToken: string;
     refreshToken: string;
+    error?: string;
   }
+}
 
-  interface AdapterUser extends User {
-    accessToken: string;
-    refreshToken: string;
-  }
-
+declare module "next-auth/jwt" {
   interface JWT {
     accessToken: string;
     refreshToken: string;
+    id: string;
+    email: string;
+    name: string;
+    error?: string;
   }
 }

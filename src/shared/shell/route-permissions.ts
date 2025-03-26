@@ -32,11 +32,6 @@ export const PROTECTED_ROUTES: RoutePermissions = {
     restrictedRoles: ["OPSWR"],
     requiresAuth: true,
   },
-  // "/user": {
-  //   allowedRoles: ["SA", "OM"],
-  //   restrictedRoles: ["OPSWR"],
-  //   requiresAuth: true,
-  // },
   "/my-organization": {
     allowedRoles: ["SA", "OM"],
     restrictedRoles: ["OPSWR"],
@@ -52,21 +47,7 @@ export const PROTECTED_ROUTES: RoutePermissions = {
     restrictedRoles: ["OPSWR"],
     requiresAuth: true,
   },
-  // "/payable": {
-  //   allowedRoles: ["SA", "OM", "FI"],
-  //   restrictedRoles: ["OPSWR"],
-  //   requiresAuth: true,
-  // },
-  // "/receivable": {
-  //   allowedRoles: ["SA", "OM", "FI"],
-  //   restrictedRoles: ["OPSWR"],
-  //   requiresAuth: true,
-  // },
-  // "/expense-type": {
-  //   allowedRoles: ["SA", "OM", "FI"],
-  //   restrictedRoles: ["OPSWR"],
-  //   requiresAuth: true,
-  // },
+  
   "/payment-collection": {
     allowedRoles: ["SA", "OM", "FI"],
     restrictedRoles: ["OPSWR"],
@@ -85,27 +66,6 @@ export const NAV_ITEMS = {
       { label: "Departments", path: "/departments" },
     ],
   },
-  INTERACTIONS: {
-    label: "Interactions",
-    icon: IconSocial,
-    children: [
-      {
-        label: "FAQs",
-        icon: IconMoneybag,
-        path: "/faqs",
-      },
-      {
-        label: "Feed Backs",
-        icon: IconCalendar,
-        path: "/feed-backs",
-      },
-      {
-        label: "Testimonials",
-        icon: IconCurrency,
-        path: "/testimonials",
-      },
-    ],
-  },
   PROPERTIES: {
     label: "Properties",
     icon: IconBuildingEstate,
@@ -114,44 +74,5 @@ export const NAV_ITEMS = {
       { label: "Properties", path: "/property" },
       { label: "Leases", path: "/lease" },
     ],
-  },
-  BANKACCOUNTS: {
-    label: "Bank Accounts",
-    icon: IconMoneybag,
-    children: [
-      { label: "Organizational", path: "/organization-bank-accounts" },
-      { label: "Individual", path: "/bank-accounts" },
-    ],
-  },
-  FINANCES: {
-    label: "Finances",
-    icon: IconReportMoney,
-    children: [
-      { label: "Expenses", path: "/expense" },
-      { label: "Invoice Items", path: "/invoice-item" },
-      { label: "Payables", path: "/payable" },
-      { label: "Receivables", path: "/receivable" },
-      { label: "Expense Types", path: "/expense-types" },
-      { label: "Revenue Types", path: "/revenue-types" },
-    ],
-  },
-  Maintenance: {
-    label: "Maintenance",
-    icon: IconAlertHexagon,
-    children: [
-      { label: "Maintenance Requests", path: "/maintenance-request" },
-      { label: "Maintenance Types", path: "/maintenance-types" },
-      { label: "Maintenance Schedules", path: "/maintenance-schedules" },
-    ],
-  },
-  SETTINGS: {
-    label: "Settings",
-    icon: IconAdjustments,
-    children: [{ label: "Document Type", path: "/document-types" }],
-  },
-  SECURITIES: {
-    label: "Securities",
-    icon: IconLock,
-    children: [{ label: "Change password", path: "/password-change" }],
   },
 } as const;

@@ -1,9 +1,10 @@
+"use client";
 
-import { useGetUserInfoQuery } from "@/app/(features)/user/_store/user.query";
+import {  useLazyGetUserInfoQuery } from "@/app/(features)/user/_store/user.query";
 import { ActiveRole, Organization, UserProfile, UserRole } from "@/shared/models/user-info.model";
 import { decodeJwt } from "jose";
+import { useMemo, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useMemo } from "react";
 
 interface UseUserInfoReturn {
   user: UserProfile | null;
@@ -23,46 +24,45 @@ interface JwtPayload {
 }
 
 export function useUserInfo(): UseUserInfoReturn {
-  const { data: userData, isLoading, error } = useGetUserInfoQuery();
-  // const [
-  //   getUserInfo,
-  //   { isLoading: isLoadingGetUserInfo, error: errorGetUserInfo },
-  // ] = useLazyGetUserInfoQuery();
+  const [getUserInfo, { data: userData, isLoading, error }] = useLazyGetUserInfoQuery();
+  const { data: session, status: sessionStatus } = useSession();
+  console.log('session', session);
+  console.log('status',sessionStatus)
 
-  const { data: session } = useSession();
-  const decrypt = session?.accessToken
-    ? (decodeJwt(session.accessToken) as JwtPayload)
-    : null;
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  console.log('data', userData);
 
-  const userInfo = useMemo(() => {
-    if (!userData) return null;
-    return userData as unknown as UserProfile;
-  }, [userData]);
+  useEffect(() => {
+    if (sessionStatus === "authenticated" && accessToken) {
+      getUserInfo();
+    }
+  }, [sessionStatus, accessToken, getUserInfo]);
 
-  const organization = useMemo(() => {
-    return userInfo?.organization ?? null;
-  }, [userInfo]);
+  useEffect(() => {
+    // Update accessToken based on NextAuth v5 session
+    if (session?.accessToken) {
+      setAccessToken(session.accessToken);
+    }
+  }, [session]);
 
-  const userRoles = useMemo(() => {
-    return userInfo?.userRoles ?? [];
-  }, [userInfo]);
+  console.log('accessToken', accessToken);
 
-  const activeRole = useMemo(() => {
-    return decrypt?.activeRole ?? null;
-  }, [decrypt]);
+  // Decode the JWT token if accessToken exists
+  const decrypt = accessToken ? (decodeJwt(accessToken) as JwtPayload) : null;
 
-  const isAdmin = useMemo(() => {
-    return userRoles.some((role) => role.role.key === "SA");
-  }, [userRoles]);
+  // User info and related data
+  const userInfo = useMemo(() => (userData ? (userData as unknown as UserProfile) : null), [userData]);
+  const organization = useMemo(() => userInfo?.organization ?? null, [userInfo]);
+  const userRoles = useMemo(() => userInfo?.userRoles ?? [], [userInfo]);
+  const activeRole = useMemo(() => decrypt?.activeRole ?? null, [decrypt]);
 
-  const isPowerUser = useMemo(() => {
-    return userInfo?.isPowerUser ?? false;
-  }, [userInfo]);
+  // Role-based checks
+  const isAdmin = useMemo(() => userRoles.some((role) => role.role.key === "SA"), [userRoles]);
+  const isPowerUser = useMemo(() => userInfo?.isPowerUser ?? false, [userInfo]);
 
+  // Check if a user has a specific role
   const hasRole = useMemo(() => {
-    return (roleKey: string) => {
-      return userRoles.some((role) => role.role.key === roleKey);
-    };
+    return (roleKey: string) => userRoles.some((role) => role.role.key === roleKey);
   }, [userRoles]);
 
   return {

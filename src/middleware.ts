@@ -1,8 +1,8 @@
+import { auth } from "@/auth"; // NextAuth v5
 import { decodeJwt } from "jose";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { Role } from "./models/role.model";
-import { auth } from "../auth";
 
 type RoutePermissions = {
   [key: string]: {
@@ -24,10 +24,6 @@ const protectedRoutes: RoutePermissions = {
     allowedRoles: ["SA", "OM"],
     restrictedRoles: ["OPSWR"],
   },
-  // "/user": {
-  //   allowedRoles: ["SA", "OM"],
-  //   restrictedRoles: ["OPSWR"],
-  // },
   "/my-organization": {
     allowedRoles: ["SA", "OM"],
     restrictedRoles: ["OPSWR"],
@@ -40,18 +36,6 @@ const protectedRoutes: RoutePermissions = {
     allowedRoles: ["SA", "OM", "FI"],
     restrictedRoles: ["OPSWR"],
   },
-  // "/payable": {
-  //   allowedRoles: ["SA", "OM", "FI"],
-  //   restrictedRoles: ["OPSWR"],
-  // },
-  // "/receivable": {
-  //   allowedRoles: ["SA", "OM", "FI"],
-  //   restrictedRoles: ["OPSWR"],
-  // },
-  // "/expense-type": {
-  //   allowedRoles: ["SA", "OM", "FI"],
-  //   restrictedRoles: ["OPSWR"],
-  // },
   "/payment-collection": {
     allowedRoles: ["SA", "OM", "FI"],
     restrictedRoles: ["OPSWR"],
@@ -84,12 +68,14 @@ interface JwtPayload {
 
 export async function middleware(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.accessToken) {
+    const session = await auth(); // ✅ NextAuth v5 session retrieval
+
+    if (!session || !session.accessToken) {
       return NextResponse.redirect(new URL("/auth/signin", request.url));
     }
 
     const decodedToken = decodeJwt(session.accessToken) as JwtPayload;
+
     if (!decodedToken || !decodedToken.activeRole) {
       return NextResponse.redirect(new URL("/auth/signin", request.url));
     }
@@ -135,8 +121,5 @@ export const config = {
     "/role/:path*",
     "/analytics/:path*",
     "/payment-collection/:path*",
-    // "/payable/:path*",
-    // "/receivable/:path*",
-    // "/expense-type/:path*",
   ],
 };

@@ -16,13 +16,13 @@ import NextTopLoader from "nextjs-toploader";
 import { AuthProfileHandler } from "../components/AuthProfileHandler";
 import { Providers } from "../store/provider";
 import { ProtectedShell } from "@/shared/shell/protected-shell";
-import { auth } from "../../auth";
+import { auth } from "@/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Yene Properties",
-  description: "Yene Properties - Transport Management System",
+  title: "PMS Admin",
+  description: "PMS Admin - Property Management System",
 };
 
 export default async function RootLayout({

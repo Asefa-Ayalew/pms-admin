@@ -1,7 +1,7 @@
 import { decodeJwt } from "jose";
-import { AuthOptions } from "next-auth";
+import { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import handleLogout from "./src/shared/utitlity/log-out";
+import handleLogout from "./shared/utitlity/log-out";
 
 interface AuthResponse {
   accessToken: string;
@@ -58,10 +58,11 @@ export async function updateTokenWithUserData(session: any) {
   }
 }
 
-export const authConfig: AuthOptions = {
+export const authConfig: NextAuthConfig = {
   session: { strategy: "jwt" },
   secret:
     process.env.AUTH_SECRET || "072+s5MdhjIugCd9Z0BEmhBVnkCRVQuxbzymIWASSuo=",
+  trustHost: true,
 
   callbacks: {
     // Handle JWT callback
@@ -117,10 +118,19 @@ export const authConfig: AuthOptions = {
       };
     },
 
-    // Removed the 'authorized' callback as it is not supported by next-auth
+    authorized: async ({ auth, request }) => {
+      // Allow public paths
+      const pathname = request.nextUrl?.pathname;
+      if (pathname?.startsWith("/auth/")) {
+        return true;
+      }
+
+      // Require auth for all other paths
+      return !!auth;
+    },
   },
 
-  // Removed 'redirectProxyUrl' as it is not a valid property of 'AuthOptions'
+  redirectProxyUrl: process.env.NEXT_PUBLIC_APP_API,
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
@@ -158,7 +168,6 @@ export const authConfig: AuthOptions = {
           }
 
           return {
-            id: profile?.id || accessToken, // Ensure 'id' is included
             accessToken,
             refreshToken,
             profile,

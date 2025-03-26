@@ -89,62 +89,6 @@ const generateNavData = (
         link: child.path,
       })),
     },
-    {
-      label: NAV_ITEMS.BANKACCOUNTS.label,
-      icon: NAV_ITEMS.BANKACCOUNTS.icon,
-      links: NAV_ITEMS.BANKACCOUNTS.children.map((child) => ({
-        label: child.label,
-        link: child.path,
-      })),
-    },
-    {
-      label: NAV_ITEMS.FINANCES.label,
-      icon: NAV_ITEMS.FINANCES.icon,
-      links: NAV_ITEMS.FINANCES.children.map((child) => ({
-        label: child.label,
-        link: child.path,
-      })),
-    },
-    {
-      label: NAV_ITEMS.INTERACTIONS.label,
-      icon: NAV_ITEMS.INTERACTIONS.icon,
-      links: NAV_ITEMS.INTERACTIONS.children.map((child) => ({
-        label: child.label,
-        link: child.path,
-      })),
-    },
-    {
-      label: NAV_ITEMS.UsersManagement.label,
-      icon: NAV_ITEMS.UsersManagement.icon,
-      links: NAV_ITEMS.UsersManagement.children.map((child) => ({
-        label: child.label,
-        link: child.path,
-      })),
-    },
-    {
-      label: NAV_ITEMS.Maintenance.label,
-      icon: NAV_ITEMS.Maintenance.icon,
-      links: NAV_ITEMS.Maintenance.children.map((child) => ({
-        label: child.label,
-        link: child.path,
-      })),
-    },
-    {
-      label: NAV_ITEMS.SETTINGS.label,
-      icon: NAV_ITEMS.SETTINGS.icon,
-      links: NAV_ITEMS.SETTINGS.children.map((child) => ({
-        label: child.label,
-        link: child.path,
-      })),
-    },
-    {
-      label: NAV_ITEMS.SECURITIES.label,
-      icon: NAV_ITEMS.SECURITIES.icon,
-      links: NAV_ITEMS.SECURITIES.children.map((child) => ({
-        label: child.label,
-        link: child.path,
-      })),
-    },
   ].filter(Boolean) as NavItem[];
 
   return navItems

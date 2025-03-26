@@ -89,7 +89,7 @@ export default function Login() {
         <Stack align="center" justify="center" gap={20}>
           <Image
             src="/logos/logo.png"
-            alt="Yene Properties"
+            alt="PMS Admin"
             width={120}
             height={60}
           />
@@ -98,7 +98,7 @@ export default function Login() {
             className={clsx(classes.title, "text-2xl text-slate-600")}
             ta="center"
           >
-            Welcome To Yene Properties
+            Welcome To PMS Admin
           </Title>
         </Stack>
         <form

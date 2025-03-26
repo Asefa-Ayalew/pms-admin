@@ -1,6 +1,6 @@
+import { auth } from "@/auth";
 import { BaseQueryFn } from "@reduxjs/toolkit/query";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
-import { auth } from "../../../auth";
 
 export const axiosBaseQuery =
   (

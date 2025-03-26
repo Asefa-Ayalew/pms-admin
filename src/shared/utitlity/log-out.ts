@@ -1,32 +1,37 @@
+import { signOut } from "@/auth";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { signOut } from "next-auth/react";
-import { auth } from "../../../auth";
 
-const handleLogout = async () => {
+const handleLogout = async (accessToken?: string) => {
   try {
-    const session = await auth(); // Fetch session in NextAuth v5
-
-    if (session?.user?.accessToken) {
+    // If we have an access token, call the backend logout endpoint
+    if (accessToken) {
       await fetch(`${process.env.NEXT_PUBLIC_APP_API}/auth/logout`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${session.user.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
-      });
-
-      await signOut();
-      notifications.show({
-        title: "Logout successful",
-        message: "You have been logged out",
-        color: "green",
-      });
-      return true;
+      }).catch(() => {}); // Silently fail if logout API fails
     }
 
+    // Perform client-side sign out
+    await signOut({
+      redirect: false,
+    });
+
+    // Show success notification
+    notifications.show({
+      title: "Logout successful",
+      message: "You have been logged out",
+      color: "green",
+    });
+
     modals.closeAll();
-    return false;
+
+    return true;
   } catch (error) {
+    console.error("Logout error:", error);
     modals.closeAll();
     notifications.show({
       title: "Logout failed",
@@ -36,5 +41,4 @@ const handleLogout = async () => {
     return false;
   }
 };
-
-export default handleLogout;
+export default  handleLogout

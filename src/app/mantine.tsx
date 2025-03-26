@@ -1,6 +1,6 @@
 "use client";
 
-import { theme } from "@/shared/theme/mantine";
+import {theme} from "@/shared/theme/mantine"
 import { MantineProvider, MantineThemeOverride } from "@mantine/core";
 
 export default function RootStyleRegistry({
