@@ -26,11 +26,8 @@ interface JwtPayload {
 export function useUserInfo(): UseUserInfoReturn {
   const [getUserInfo, { data: userData, isLoading, error }] = useLazyGetUserInfoQuery();
   const { data: session, status: sessionStatus } = useSession();
-  console.log('session', session);
-  console.log('status',sessionStatus)
 
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  console.log('data', userData);
 
   useEffect(() => {
     if (sessionStatus === "authenticated" && accessToken) {
@@ -44,8 +41,6 @@ export function useUserInfo(): UseUserInfoReturn {
       setAccessToken(session.accessToken);
     }
   }, [session]);
-
-  console.log('accessToken', accessToken);
 
   // Decode the JWT token if accessToken exists
   const decrypt = accessToken ? (decodeJwt(accessToken) as JwtPayload) : null;

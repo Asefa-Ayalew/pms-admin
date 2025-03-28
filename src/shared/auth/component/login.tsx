@@ -15,7 +15,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import z from "zod";
-import classes from "./AuthenticationImage.module.css";
+import classes from "./authentication-image.module.css";
 
 
 type FormSchema = z.infer<typeof LoginSchema>;

@@ -38,7 +38,7 @@ import InternetConnectionStatus from "../component/internet-connection-status/in
 import LogoutModal from "../component/logout-modal";
 import SwitchRoleModal from "../component/switch-role-modal";
 import { useLazyGetSignedUrlQuery } from "../utils/signedUrl/file.query";
-import { cn } from "../utitlity/cn";
+import { cn } from "../utility/cn";
 import { NavigationContainer } from "./nav-bar-links-group-component";
 import classes from "./navbar.module.css";
 import { NAV_ITEMS, PROTECTED_ROUTES } from "./route-permissions";

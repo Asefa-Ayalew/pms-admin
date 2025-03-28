@@ -12,7 +12,7 @@ import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import handleLogout from "@/shared/utitlity/log-out";
+import handleLogout from "@/shared/utility/log-out";
 
 export default function LogoutModal() {
   const [isSignout, setIsSignout] = useState(false);

@@ -1,7 +1,7 @@
 import { decodeJwt } from "jose";
 import { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import handleLogout from "./shared/utitlity/log-out";
+import handleLogout from "./shared/utility/log-out";
 
 interface AuthResponse {
   accessToken: string;
@@ -16,45 +16,35 @@ export async function refreshAccessToken(token: any) {
       {
         method: "GET",
         headers: {
-          "x-refresh-token": token.refreshToken,
+          "Authorization": `Bearer ${token.refreshToken}`,
+          "Content-Type": "application/json",
         },
       }
     );
+
     if (!response.ok) {
       if (response.status === 401) {
         console.warn("Refresh token expired");
+        await handleLogout();
         return { ...token, error: "RefreshTokenExpired" };
       }
-      throw new Error("Failed to refresh token");
+      throw new Error(`Failed to refresh token: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("refresh token data", data);
-    const returnData = {
+    if (!data?.token || !data?.refreshToken) {
+      throw new Error("Invalid refresh response");
+    }
+
+    return {
       ...token,
       accessToken: data.token,
       refreshToken: data.refreshToken,
     };
-    console.log("returnData", returnData);
-    return returnData;
   } catch (error: any) {
     console.error("Error refreshing access token:", error.message);
     await handleLogout();
     return { ...token, error: "RefreshTokenError" };
-  }
-}
-
-// Function to update token with new user data
-export async function updateTokenWithUserData(session: any) {
-  try {
-    return {
-      ...session,
-      accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
-    };
-  } catch (error: any) {
-    console.error("Error updating token with user data:", error);
-    return session;
   }
 }
 
@@ -65,68 +55,52 @@ export const authConfig: NextAuthConfig = {
   trustHost: true,
 
   callbacks: {
-    // Handle JWT callback
     async jwt({ token, user, trigger, session }) {
-      // First login
       if (user) {
-        const authUser = user as unknown as AuthResponse;
+        const authUser = user as AuthResponse;
         return {
           accessToken: authUser.accessToken,
           refreshToken: authUser.refreshToken,
         };
       }
 
-      // Handle user profile update
       if (trigger === "update") {
-        return updateTokenWithUserData(session);
+        return {
+          ...session,
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken,
+        };
       }
 
-      // Handle token expiration
       if (token.accessToken) {
         const currentTimestamp = Math.floor(Date.now() / 1000);
         const decodedToken = decodeJwt(token.accessToken as string);
-
         const tokenExpiry = decodedToken.exp;
         const bufferTime = 30;
 
         if (tokenExpiry && currentTimestamp >= tokenExpiry - bufferTime) {
           console.log("Token needs refresh, requesting new token...");
           const newToken = await refreshAccessToken(token);
-          if (newToken.error) {
-            console.log("Token refresh failed:", newToken.error);
-            return { ...token };
-          }
-
-          return newToken;
+          return newToken.error ? { ...token } : newToken;
         }
       }
-
       return token;
     },
 
-    // Handle session callback
-    async session({ session, token }: any) {
+    async session({ session, token }) {
       if (token.error) {
-        // Handle session error with proper error message
-        throw new Error(token.error as string);
+        throw new Error(token.error);
       }
-
       return {
         ...session,
-        accessToken: token.accessToken as string,
-        refreshToken: token.refreshToken as string,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
       };
     },
 
     authorized: async ({ auth, request }) => {
-      // Allow public paths
       const pathname = request.nextUrl?.pathname;
-      if (pathname?.startsWith("/auth/")) {
-        return true;
-      }
-
-      // Require auth for all other paths
-      return !!auth;
+      return pathname?.startsWith("/auth/") || !!auth;
     },
   },
 
@@ -153,25 +127,18 @@ export const authConfig: NextAuthConfig = {
             `${process.env.NEXT_PUBLIC_APP_API}/auth/login`,
             {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 email: credentials.email,
                 password: credentials.password,
               }),
             }
           );
-          const { accessToken, refreshToken, profile } = await response.json();
-          if (!accessToken) {
-            throw new Error("Login failed");
-          }
 
-          return {
-            accessToken,
-            refreshToken,
-            profile,
-          };
+          const { accessToken, refreshToken, profile } = await response.json();
+          if (!accessToken) throw new Error("Login failed");
+
+          return { accessToken, refreshToken, profile };
         } catch (error: any) {
           console.error("Login error:", error.message);
           return null;

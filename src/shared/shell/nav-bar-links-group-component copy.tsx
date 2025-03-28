@@ -11,7 +11,7 @@ import { IconChevronRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { cn } from "../utitlity/cn";
+import { cn } from "../utility/cn";
 import classes from "./nav-bar-links-group.module.css";
 
 export interface LinksGroupProps {

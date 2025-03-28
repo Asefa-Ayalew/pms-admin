@@ -68,7 +68,7 @@ interface JwtPayload {
 
 export async function middleware(request: NextRequest) {
   try {
-    const session = await auth(); // ✅ NextAuth v5 session retrieval
+    const session = await auth();
 
     if (!session || !session.accessToken) {
       return NextResponse.redirect(new URL("/auth/signin", request.url));

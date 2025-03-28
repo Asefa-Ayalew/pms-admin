@@ -3,7 +3,7 @@ import {
   Collection,
   CollectionQuery,
 } from "@/shared/models/collection.model";
-import { collectionQueryBuilder } from "@/shared/utitlity/collection-query-builder";
+import { collectionQueryBuilder } from "@/shared/utility/collection-query-builder";
 import { appApi } from "@/store/app.api";
 import { notifications } from "@mantine/notifications";
 import { ROLE_ENDPOINT } from "./role.endpoint";
